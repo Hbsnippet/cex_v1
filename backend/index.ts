@@ -5,7 +5,9 @@ import {Pool} from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";;
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
-    1
+
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
@@ -16,7 +18,7 @@ app.use(cors());
 
 
 
-
+const WT_SECRET = process.env.JWT_SECRET;
 const pool = new Pool({connectionString: process.env.DATABASE_URL })
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({adapter})
@@ -33,7 +35,10 @@ const ORDERBOOKS = {
     BTC: {}
 }
 
-app.post("/signup", (req, res) => {
+app.post("/signup", async (req, res) => {
+    const {username, password} = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
 })
 
