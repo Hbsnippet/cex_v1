@@ -1,9 +1,31 @@
 import express from "express";
+import cors from "cors";
+import {Pool} from "pg";
+
+import { PrismaPg } from "@prisma/adapter-pg";;
+import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
+    1
+
+dotenv.config();
 
 const app = express();
 
+app.use(express.json());
+app.use(cors());
+
+
+
+
+const pool = new Pool({connectionString: process.env.DATABASE_URL })
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({adapter})
+
+
+
+
 const BALANCES = {
-    
+
 }
 
 const ORDERBOOKS = {
