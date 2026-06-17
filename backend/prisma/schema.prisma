@@ -58,7 +58,7 @@ model Fill {
 model Stock {
   id Int @id @default(autoincrement())
   name String
-  symbol String
+  symbol String @unique
 
   orders Order[]
 }
