@@ -13,6 +13,7 @@ export function authMiddleWare(req: any, res: any, next: any){
     try {
         const decoded: any = jwt.verify(token, JWT_SECRET);
         req.userId = decoded.userId;
+        next()
     } catch (error) {
         res.status(401).json({error: "Invalid Token"})
     }
