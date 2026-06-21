@@ -383,6 +383,10 @@ app.post("/order",authMiddleWare, async (req: any, res: any) => {
     ALSO RETURNS THE INDIVIDUAL FILLS OF THIS ORDER 
 */
 app.get("/order/:orderId")
+
+
+
+
 app.delete("/order/:orderId")
 app.get("/depth/:symbol");
 app.get("/orders");
