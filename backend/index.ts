@@ -382,6 +382,8 @@ app.post("/order",authMiddleWare, async (req: any, res: any) => {
     returns the status of an order (partially filled, success, cancellled)
     ALSO RETURNS THE INDIVIDUAL FILLS OF THIS ORDER 
 */
+
+// queue using gonna happen
 app.get("/order/:orderId")
 
 
