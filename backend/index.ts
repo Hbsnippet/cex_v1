@@ -1,4 +1,5 @@
 import express from "express";
+import { createClient } from "redis";
 import cors from "cors";
 import {Pool} from "pg";
 
@@ -17,6 +18,7 @@ import { availableMemory } from "node:process";
 dotenv.config();
 
 const app = express();
+const client = await createClient({url : "rediss://default:gQAAAAAAAhOSAAIgcDEyZTIyZDMxOTRiMmE0ODliYjg0N2VjODUyYzY4MjczOA@robust-meerkat-136082.upstash.io:6379"}).connect
 
 app.use(express.json());
 app.use(cors());
