@@ -13,7 +13,6 @@ import cookieParser from "cookie-parser";
 import {authMiddleWare} from "./middleware/authmiddleware.ts";
 
 import {HttpStatusCode} from "./types.ts"
-import { availableMemory } from "node:process";
 
 dotenv.config();
 
@@ -22,6 +21,7 @@ const client = await createClient({url : "rediss://default:gQAAAAAAAhOSAAIgcDEyZ
 
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser())
 
 
 
