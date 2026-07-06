@@ -39,13 +39,45 @@ type OpenOrder = {
     qty: number
 }
 
-// --- TERE PURANE GLOBAL DATA STRUCTURES ---
-const ORDERBOOK: any = { SOL: { bids: {}, ask: {} }, BTC: { bids: {}, ask: {} }, HYPE: { bids: {}, ask: {} } };
-const BALANCES: any = {};
-function ensureBalance(userId: number, asset: string) {
-    if (!BALANCES[userId]) BALANCES[userId] = {};
-    if (!BALANCES[userId][asset]) BALANCES[userId][asset] = { available: 0, locked: 0 };
+type OrderBookSide = {
+    [price: number]: OpenOrder[]
 }
+
+const ORDERBOOK: {
+    [symbol: string]: {
+        bids: OrderBookSide;
+        ask: OrderBookSide;
+    }
+} = {
+    SOL: {bids: {}, ask: {}},
+    BTC: {bids: {}, ask: {}},
+    HYPE: {bids: {}, ask: {}}
+}
+
+
+
+
+type balance = {
+    available: number;
+    locked: number
+}
+
+type AssetBalance = {
+    [asset: string]: balance;
+}
+
+type UserBalance = {
+    [userId: number]: AssetBalance;
+}
+
+
+const BALANCES: UserBalance = {}
+
+function ensureBalance(userId: number, asset: string){
+    if(!BALANCES[userId]) BALANCES[userId] = {}
+    if(!BALANCES[userId][asset]) BALANCES[userId][asset] = {available: 0, locked: 0}
+}
+
 
 // 🔥 MAIN LOOP: JO ORDERS KO UTAYEGA AUR PROCESS KAREGA
 async function startEngine() {
@@ -129,12 +161,12 @@ async function startEngine() {
                 const queue = oppositeSide[levelPrice];
                 while (queue && queue.length > 0 && remianingQty > 0) {
                     const restingOrder = queue[0];
-                    const fillQty = Math.min(remianingQty, restingOrder.qty);
+                    const fillQty = Math.min(remianingQty, restingOrder!.qty);
 
-                    const buyUserId = side === "BUY" ? userId : restingOrder.userId;
-                    const sellUserId = side === "BUY" ? restingOrder.userId : userId;
-                    const buyOrderId = side === "BUY" ? order.id : restingOrder.orderId;
-                    const sellOrderId = side === "BUY" ? restingOrder.orderId : order.id;
+                    const buyUserId = side === "BUY" ? userId : restingOrder!.userId;
+                    const sellUserId = side === "BUY" ? restingOrder!.userId : userId;
+                    const buyOrderId = side === "BUY" ? order.id : restingOrder!.orderId;
+                    const sellOrderId = side === "BUY" ? restingOrder!.orderId : order.id;
 
                     // Prisma fills writes
                     await prisma.fill.create({ data: { userId: buyUserId, qty: fillQty, side: "BUY", type, price: levelPrice, asset: symbol, originalOrderId: buyOrderId } });
@@ -154,9 +186,9 @@ async function startEngine() {
 
                     totalTradedValue += tradeValue;
                     remianingQty -= fillQty;
-                    restingOrder.qty -= fillQty;
+                    restingOrder!.qty -= fillQty;
 
-                    if (restingOrder.qty === 0) queue.shift();
+                    if (restingOrder!.qty === 0) queue.shift();
                 }
                 if (queue && queue.length === 0) delete oppositeSide[levelPrice];
             }
