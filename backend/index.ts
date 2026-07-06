@@ -198,21 +198,32 @@ app.post("/order", authMiddleWare, async (req: any, res: any) => {
 */
 
 // queue using gonna happen
-app.get("/order/:orderId")
+app.get("/order/:orderId", authMiddleWare, async (req: any, res: any) => {
+    res.json({ message: "TODO: implement order status lookup" });
+});
 
+app.delete("/order/:orderId", authMiddleWare, async (req: any, res: any) => {
+    res.json({ message: "TODO: implement order cancellation" });
+});
 
+app.get("/depth/:symbol", async (req, res) => {
+    res.json({ message: "TODO: implement orderbook depth" });
+});
 
+app.get("/orders", authMiddleWare, async (req: any, res: any) => {
+    res.json({ message: "TODO: implement orders list" });
+});
 
-app.delete("/order/:orderId")
-app.get("/depth/:symbol");
-app.get("/orders");
-app.get("/fills");
+app.get("/fills", authMiddleWare, async (req: any, res: any) => {
+    res.json({ message: "TODO: implement fills list" });
+});
 
-app.get("/balance/usd");
+app.get("/balance/usd", authMiddleWare, async (req: any, res: any) => {
+    res.json({ message: "TODO: implement INR/USD balance" });
+});
 
-/*  
-    Returns the balance of all stocks
-*/
-app.get("/balance")
+app.get("/balance", authMiddleWare, async (req: any, res: any) => {
+    res.json({ message: "TODO: implement full balance" });
+});
 
 app.listen(3000, () => console.log("CEX running on :3000"));
