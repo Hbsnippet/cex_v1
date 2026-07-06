@@ -38,9 +38,17 @@ const prisma = new PrismaClient({adapter})
 
 
 const client = await createClient({
-    url: "redis://default:gQAAAAAAAhOSAAIgcDEyZTIyZDMxOTRiMmE0ODliYjg0N2VjODUyYzY4MjczOA@robust-meerkat-136082.upstash.io:6379"
+    url: process.env.REDIS_URL, 
+    socket: {
+        reconnectStrategy: (retries) => {
+            const delay = Math.min(retries * 100, 3000);
+            console.log(`[Redis] Connection lost. Retrying in ${delay}ms...`);
+            return delay;
+        },
+        connectTimeout: 10000,
+    }
 })
-    .on("error", (err) => console.log("Redis Client Error", err))
+    .on("error", (err) => console.log("Redis Client Error", err.message))
     .connect();
 
 

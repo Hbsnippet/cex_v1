@@ -4,6 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 
+
 dotenv.config();
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -12,13 +13,20 @@ const prisma = new PrismaClient({ adapter });
 
 // Redis connection setup
 const redisWorker = await createClient({
-    url: "redis://default:TERA_PASSWORD_YAHAN@robust-meerkat-136082.upstash.io:6379"
+    url: process.env.REDIS_URL,
+    socket: {
+        reconnectStrategy: (retries) => {
+            const delay = Math.min(retries * 100, 3000);
+            console.log(`[Redis] Connection lost. Retrying in ${delay}ms...`);
+            return delay;
+        }
+    }
 })
-    .on("error", (err) => console.log("Redis Client Error", err))
+    .on("error", (err) => console.log("Redis Client Error", err.message))
     .connect();
 
 
-
+console.log("REDIS_URL is:", process.env.REDIS_URL);
 
 
 
@@ -78,19 +86,24 @@ function ensureBalance(userId: number, asset: string){
     if(!BALANCES[userId][asset]) BALANCES[userId][asset] = {available: 0, locked: 0}
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 
 // 🔥 MAIN LOOP: JO ORDERS KO UTAYEGA AUR PROCESS KAREGA
 async function startEngine() {
     while (true) {
         try {
-            // brPop block karega jab tak queue mein koi data na aaye
-            // '0' ka matlab infinity wait (polling ka jhanjhat khatam)
-            const result = await redisWorker.brPop("incoming-orders", 0);
+           
+            const result = await redisWorker.rPop("incoming-orders");
             
-            if (!result) continue;
+            if (!result) {
+                await sleep(2000);
+                continue;
+            };
 
             // result.element mein tera JSON string milega
-            const orderData = JSON.parse(result.element);
+            const orderData = JSON.parse(result);
+
             const { userId, side, type, symbol, price, qty } = orderData;
 
             console.log(`Processing order for user ${userId} | ${side} ${qty} ${symbol}`);
@@ -218,6 +231,7 @@ async function startEngine() {
 
         } catch (err) {
             console.error("Error in matching engine execution loop:", err);
+            await sleep(2000)
         }
     }
 }
