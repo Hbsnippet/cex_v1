@@ -145,25 +145,7 @@ app.post("/signin",async (req, res) => {
 
 })
 
-/*
-    body = {
-        type:           "market" | "limit",
-        price:          number | null,
-        qty:            number,
-        market_id:      string,
-        side:           "buy" | "sell"
-    }
 
-    @returns {
-        orderId: string,
-        filledQty: number,
-        averagePrice
-    }
-*/
-
-// 50.01
-
-// 500001
 app.post("/order", authMiddleWare, async (req: any, res: any) => {
     try {
         const userId = req.userId;
