@@ -17,6 +17,28 @@ const redisWorker = createClient({
 await redisWorker.connect();
 console.log("🚀 Matching Engine Worker Connected to Redis!");
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// TYPES DEFINED
+
+type OpenOrder = {
+    orderId: number,
+    userId: number,
+    price: number,
+    qty: number
+}
+
 // --- TERE PURANE GLOBAL DATA STRUCTURES ---
 const ORDERBOOK: any = { SOL: { bids: {}, ask: {} }, BTC: { bids: {}, ask: {} }, HYPE: { bids: {}, ask: {} } };
 const BALANCES: any = {};

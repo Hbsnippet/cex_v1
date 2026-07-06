@@ -48,33 +48,6 @@ const client = await createClient({
 
 
 
-
-
-type OpenOrder = {
-    orderId: number;
-    userId: number;
-    price: number;
-    qty: number;
-}
-
-type OrderBookSide = {
-    [price: number]: OpenOrder[]
-}
-
-const ORDERBOOK: {
-    [symbol: string]: {
-        bids: OrderBookSide;
-        ask: OrderBookSide;
-    }
-} = {
-    SOL: {bids: {}, ask: {}},
-    BTC: {bids: {}, ask: {}},
-    HYPE: {bids: {}, ask: {}}
-}
-
-
-
-
 type balance = {
     available: number;
     locked: number
