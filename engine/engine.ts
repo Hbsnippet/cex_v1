@@ -11,11 +11,11 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 // Redis connection setup
-const redisWorker = createClient({
+const redisWorker = await createClient({
     url: "redis://default:TERA_PASSWORD_YAHAN@robust-meerkat-136082.upstash.io:6379"
-});
-await redisWorker.connect();
-console.log("🚀 Matching Engine Worker Connected to Redis!");
+})
+    .on("error", (err) => console.log("Redis Client Error", err))
+    .connect();
 
 
 
