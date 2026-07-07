@@ -89,7 +89,6 @@ function ensureBalance(userId: number, asset: string){
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 
-// 🔥 MAIN LOOP: JO ORDERS KO UTAYEGA AUR PROCESS KAREGA
 async function startEngine() {
     while (true) {
         try {
@@ -101,14 +100,12 @@ async function startEngine() {
                 continue;
             };
 
-            // result.element mein tera JSON string milega
             const orderData = JSON.parse(result);
 
             const { userId, side, type, symbol, price, qty } = orderData;
 
             console.log(`Processing order for user ${userId} | ${side} ${qty} ${symbol}`);
 
-            // 1. DATABASE VALIDATION (JO PEHLE EXPRESS MEIN THI)
             const stock = await prisma.stock.findUnique({ where: { symbol } });
             if (!stock || !ORDERBOOK[symbol]) {
                 console.log("❌ Invalid Stock or Orderbook configuration missed.");
@@ -154,7 +151,7 @@ async function startEngine() {
                 },
             });
 
-            // 4. 🔥 TERA APNA MATCHING ENGINE ENGINE LOOP (JO TUNE LIKHA HAI)
+            // 4. MATCHING ENGINE ENGINE LOOP 
             let remianingQty = qty;
             let totalTradedValue = 0;
             const oppositeSide = side === "BUY" ? ORDERBOOK[symbol]!.ask : ORDERBOOK[symbol]!.bids;
@@ -164,9 +161,9 @@ async function startEngine() {
                 const levelPrice = priceLevel[i];
 
                 if(levelPrice === undefined || levelPrice === null) continue;
-                if (remianingQty <= 0) break; // Fix logic typo here from your code (remianingQty < qty was wrong)
+                if (remianingQty <= 0) break; 
 
-                if (type === "LIMIT") { // Fix typo here from your code (side === "LIMIT" was written)
+                if (type === "LIMIT") { 
                     if (side === "BUY" && !levelPrice > price) break;
                     if (side === "SELL" && !levelPrice < price) break;
                 }

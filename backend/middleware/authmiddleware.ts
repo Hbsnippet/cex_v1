@@ -4,7 +4,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "shhhh123";
 
 
 export function authMiddleWare(req: any, res: any, next: any){
-    const token = res.cookies.token;
+    const token = req.cookies.token;
 
     if(!token){
         return res.status(401).json({ error: "no token, please login" })

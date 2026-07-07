@@ -79,9 +79,8 @@ function ensureBalance(userId: number, asset: string){
 
 
 
-// ----------------------------------------------------------------------------------------------------------------
 //              AUTH
-// ----------------------------------------------------------------------------------------------------------------
+
 
 
 
@@ -159,15 +158,13 @@ app.post("/order", authMiddleWare, async (req: any, res: any) => {
         const userId = req.userId;
         const { side, type, symbol, price, qty } = req.body;
 
-        // Basic structural validations (bina DB ko hit kiye)
         if (!symbol || !qty || qty <= 0) {
             return res.status(400).json({ error: "Invalid qty or symbol" });
         }
         if (type === 'LIMIT' && (!price || price <= 0)) {
             return res.status(400).json({ error: "Limit order needs a valid price" });
         }
-
-        // ⚡ ASSET DEFINITION FOR THE QUEUE ENGINE
+        
         const orderPayload = {
             userId,
             side,        // "BUY" | "SELL"
@@ -178,10 +175,9 @@ app.post("/order", authMiddleWare, async (req: any, res: any) => {
             timestamp: Date.now()
         };
 
-        // 🚀 Redis list 'incoming-orders' mein order ko push kar do
         await client.lPush("incoming-orders", JSON.stringify(orderPayload));
 
-        // User ko turant free karo! (Bina matching ka wait kiye)
+        
         return res.json({ 
             status: "PENDING", 
             message: "Order queued successfully" 
@@ -192,12 +188,7 @@ app.post("/order", authMiddleWare, async (req: any, res: any) => {
         res.status(500).json({ error: "Failed to queue order" });
     }
 });
-/*
-    returns the status of an order (partially filled, success, cancellled)
-    ALSO RETURNS THE INDIVIDUAL FILLS OF THIS ORDER 
-*/
 
-// queue using gonna happen
 app.get("/order/:orderId", authMiddleWare, async (req: any, res: any) => {
     res.json({ message: "TODO: implement order status lookup" });
 });
